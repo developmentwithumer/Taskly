@@ -18,7 +18,7 @@ def login():
         password = request.form.get('password')
         user     = User.query.filter_by(email=email).first()
 
-        if user and user.password_hash and check_password_hash(user.password_hash, password):
+        if user and user.password_hash and check_password_hash(user.password_hash, password): # type: ignore
             login_user(user)
             return redirect(url_for('main.dashboard'))
 

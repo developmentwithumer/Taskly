@@ -1,5 +1,6 @@
 import os
 from flask import Flask
+from werkzeug.middleware.proxy_fix import ProxyFix
 from app.extensions import db, compress, socketio, login_manager, oauth
 from app.routes import main_bp
 from app.routes_auth import auth_bp
@@ -17,6 +18,7 @@ def create_app() -> Flask:
     and creates the database tables on first run."""
     application = Flask(__name__)
     application.config.from_mapping(settings.model_dump())
+    application.wsgi_app = ProxyFix(application.wsgi_app, x_for=1, x_proto=1)
 
     db.init_app(application)
     compress.init_app(application)
