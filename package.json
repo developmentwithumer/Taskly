@@ -1,0 +1,25 @@
+{
+  "name": "taskly",
+  "module": "index.ts",
+  "type": "module",
+  "scripts": {
+    "build:css": "bun tailwindcss -i ./src/css/src.css -o ./static/css/main.css",
+    "watch:css": "bun tailwindcss -i ./src/css/src.css -o ./static/css/main.css --watch",
+    "build:js": "bun build ./src/js/main.ts --outfile ./static/js/app.js",
+    "watch:js": "bun build ./src/js/main.ts --outfile ./static/js/app.js --watch",
+    "build": "bun run build:css && bun run build:js",
+    "watch": "echo \"Please run 'bun run watch:css' and 'bun run watch:js' in separate terminals.\""
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.2.2",
+    "@types/bun": "latest",
+    "@types/socket.io-client": "^3.0.0",
+    "tailwindcss": "^4.2.2"
+  },
+  "peerDependencies": {
+    "typescript": "^6.0.2"
+  },
+  "dependencies": {
+    "gsap": "^3.14.2"
+  }
+}

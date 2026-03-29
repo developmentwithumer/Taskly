@@ -1,0 +1,425 @@
+{% import 'macros/ui.html' as ui %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taskly Dashboard - Zen Flow</title>
+    <meta name="theme-color" content="#020617">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2306b6d4' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 13l4 4L19 7'/%3E%3C/svg%3E">
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    
+    <!-- Hide sidebar on mobile before JS loads (prevents flash) -->
+    <style>
+        @media (max-width: 767px) {
+            #sidebar { transform: translateX(-100%); }
+        }
+    </style>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.js"></script>
+    
+    <script defer src="{{ url_for('static', filename='js/app.js') }}"></script>
+</head>
+<body class="bg-slate-900 text-slate-100 h-screen overflow-hidden font-sans tracking-tight flex">
+    
+    
+    <div id="toast-container" class="fixed bottom-6 right-6 z-100 flex flex-col gap-3 pointer-events-none"></div>
+
+    
+    <aside id="sidebar" class="fixed md:relative z-50 md:z-auto inset-y-0 left-0 w-72 md:w-64 h-full bg-slate-950 md:bg-slate-950/80 backdrop-blur-2xl border-r border-slate-800/60 flex flex-col shrink-0 transition-transform duration-300">
+        
+        
+        <!-- Logo + mobile close button -->
+        <div class="px-5 pt-5 pb-4 flex items-start justify-between">
+            <div>
+                <h1 class="text-2xl font-black bg-linear-to-r from-cyan-400 via-blue-400 to-violet-400 bg-clip-text text-transparent tracking-tight leading-none">Taskly.</h1>
+                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em] mt-0.5">Zen Flow Core</p>
+            </div>
+            <!-- X close — mobile only -->
+            <button id="close-sidebar-btn" class="md:hidden p-1.5 rounded-lg text-slate-500 hover:text-white hover:bg-slate-800 transition-colors" aria-label="Close sidebar">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+
+        
+        <nav class="flex-1 px-3 py-2 overflow-y-auto space-y-1">
+
+            
+            <div id="nav-tasks-group">
+                <button id="nav-tasks-toggle" onclick="window.toggleTasksNav()" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-800/60 text-slate-300 font-bold text-sm transition-all group">
+                    <svg class="w-4 h-4 shrink-0 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                    <span class="flex-1 text-left">All Tasks</span>
+                    <svg id="tasks-chevron" class="w-3.5 h-3.5 text-slate-600 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+                </button>
+
+                
+                <div id="nav-tasks-sub" class="ml-3 pl-3 border-l border-slate-800 mt-1 mb-1 space-y-0.5 overflow-hidden" style="max-height: 0; transition: max-height 0.3s ease">
+                    <button onclick="window.filterBoard('all')" data-filter="all" class="nav-sub-item w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold text-slate-300 hover:bg-slate-800/60 hover:text-white transition-all group">
+                        <span class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-slate-500"></span>
+                            All
+                        </span>
+                        <span class="text-[10px] font-black text-slate-500 bg-slate-800 px-1.5 py-0.5 rounded-md" id="sb-all-count">0</span>
+                    </button>
+                    <button onclick="window.filterBoard('todo')" data-filter="todo" class="nav-sub-item w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:bg-slate-800/60 hover:text-white transition-all">
+                        <span class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-slate-500"></span>
+                            To Do
+                        </span>
+                        <span class="text-[10px] font-black text-slate-500 bg-slate-800 px-1.5 py-0.5 rounded-md" id="sb-todo-count">0</span>
+                    </button>
+                    <button onclick="window.filterBoard('in_progress')" data-filter="in_progress" class="nav-sub-item w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:bg-cyan-500/10 hover:text-cyan-300 transition-all">
+                        <span class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_6px_rgba(34,211,238,0.5)]"></span>
+                            In Progress
+                        </span>
+                        <span class="text-[10px] font-black text-slate-500 bg-slate-800 px-1.5 py-0.5 rounded-md" id="sb-inprogress-count">0</span>
+                    </button>
+                    <button onclick="window.filterBoard('done')" data-filter="done" class="nav-sub-item w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:bg-green-500/10 hover:text-green-300 transition-all">
+                        <span class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                            Completed
+                        </span>
+                        <span class="text-[10px] font-black text-slate-500 bg-slate-800 px-1.5 py-0.5 rounded-md" id="sb-done-count">0</span>
+                    </button>
+                    <button onclick="window.filterBoard('overdue')" data-filter="overdue" class="nav-sub-item w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:bg-red-500/10 hover:text-red-300 transition-all">
+                        <span class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                            Overdue
+                        </span>
+                        <span class="text-[10px] font-black text-slate-500 bg-slate-800 px-1.5 py-0.5 rounded-md" id="sb-overdue-count">0</span>
+                    </button>
+                </div>
+            </div>
+
+            
+            <div class="mx-1 h-px bg-slate-800/80 my-2"></div>
+
+            
+            <a href="/" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-500 hover:text-slate-300 hover:bg-slate-800/50 text-sm font-medium transition-all">
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                Home
+            </a>
+        </nav>
+
+        
+        <div class="mx-3 mb-3 px-3 py-2.5 bg-slate-800/30 border border-slate-700/30 rounded-xl">
+            <p class="text-[10px] text-slate-600 font-medium italic leading-relaxed">"Focus is the art of knowing what to ignore."</p>
+        </div>
+
+        
+        <div class="p-3 border-t border-slate-800/60">
+            <div class="relative" id="user-profile-menu-container">
+                <button type="button" onclick="document.getElementById('user-menu').classList.toggle('hidden')" class="w-full flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-800/60 transition-colors text-left group">
+                    {% if current_user.avatar_url %}
+                        <img src="{{ current_user.avatar_url }}" alt="Avatar" class="w-8 h-8 rounded-full border border-slate-700 shrink-0 object-cover ring-2 ring-transparent group-hover:ring-cyan-500/40 transition-all">
+                    {% else %}
+                        <div class="w-8 h-8 rounded-full bg-linear-to-br from-cyan-500 to-blue-600 shrink-0 flex items-center justify-center text-white text-xs font-black">
+                            {{ (current_user.name or current_user.email)[0] | upper }}
+                        </div>
+                    {% endif %}
+                    <div class="flex-1 min-w-0">
+                        <p class="text-xs font-bold text-slate-200 truncate">{{ current_user.name or current_user.email.split('@')[0] }}</p>
+                        <p class="text-[10px] text-slate-500 truncate">{{ current_user.email }}</p>
+                    </div>
+                    <svg class="w-3.5 h-3.5 text-slate-600 group-hover:text-cyan-400 transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"/></svg>
+                </button>
+                
+                
+                <div id="user-menu" class="hidden absolute bottom-full left-0 w-full mb-2 bg-slate-900 border border-slate-700/80 rounded-2xl shadow-2xl shadow-black/50 py-2 z-50 overflow-hidden">
+                    <a href="#" id="edit-profile-action" class="flex items-center gap-3 px-4 py-2.5 text-xs font-semibold text-slate-300 hover:text-cyan-300 hover:bg-slate-800/60 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                        Edit Profile
+                    </a>
+                    <div class="h-px bg-slate-800 my-1 mx-3"></div>
+                    <a href="{{ url_for('auth.logout') }}" class="flex items-center gap-3 px-4 py-2.5 text-xs font-semibold text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                        Sign Out
+                    </a>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    
+    <div id="mobile-sidebar-backdrop" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-40 opacity-0 pointer-events-none transition-opacity duration-300 md:hidden"></div>
+
+    
+    <main class="flex-1 flex flex-col h-full bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-slate-800/40 via-slate-900 to-slate-900 relative z-10 w-full overflow-hidden">
+        
+        
+        <header class="h-16 border-b border-slate-800/60 flex items-center justify-between px-4 md:px-6 bg-slate-900/60 backdrop-blur-xl shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-xl bg-linear-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/20 flex items-center justify-center">
+                    <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+                </div>
+                <h2 class="text-base font-black tracking-tight hidden sm:block bg-linear-to-r from-slate-100 to-slate-400 bg-clip-text text-transparent">My Board</h2>
+            </div>
+
+            <div class="flex-1 max-w-xs md:max-w-md mx-3 md:mx-6 relative group">
+                <svg class="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-cyan-400 transition-colors pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                <input type="text" id="global-search" placeholder="Search tasks..." class="w-full bg-slate-800/30 border border-slate-700/40 rounded-xl pl-8 pr-4 py-2 text-sm focus:outline-none focus:border-cyan-500/40 focus:bg-slate-800/60 transition-all placeholder-slate-600 text-slate-200">
+            </div>
+
+            <div class="flex items-center gap-2">
+                <button id="add-task-btn" class="hidden sm:flex items-center gap-2 px-4 py-2 bg-linear-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-sm font-bold rounded-xl shadow-lg shadow-cyan-500/20 transition-all active:scale-95">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                    New Task
+                </button>
+                <button id="add-task-btn-mobile" class="sm:hidden w-9 h-9 rounded-xl bg-linear-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-white shadow-lg shadow-cyan-500/20 active:scale-95 transition-all">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                </button>
+                <button id="toggle-sidebar-btn" class="md:hidden p-2 text-slate-500 hover:text-cyan-400 hover:bg-slate-800/50 rounded-lg transition-colors" aria-label="Open sidebar">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                </button>
+            </div>
+        </header>
+
+        
+        <div class="flex-1 overflow-auto p-4 md:p-6" id="kanban-board">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 h-full" style="grid-template-rows: repeat(2, minmax(0, 1fr)); min-height: 600px;">
+
+                
+                <div class="flex flex-col bg-slate-800/20 border border-slate-700/40 rounded-2xl overflow-hidden" data-status="todo" id="drop-todo">
+                    <div class="flex items-center justify-between px-4 py-3 border-b border-slate-700/40 bg-slate-800/40">
+                        <h3 class="text-xs font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-slate-500"></span> To Do
+                        </h3>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-bold text-slate-500 bg-slate-800 px-2 py-0.5 rounded-md" id="todo-count">0</span>
+                            <button id="add-task-btn" class="w-6 h-6 rounded-md bg-slate-800 hover:bg-cyan-500/20 text-slate-400 hover:text-cyan-400 transition-colors flex items-center justify-center">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex-1 overflow-y-auto p-3 space-y-3 task-list" id="col-todo"></div>
+                </div>
+
+                
+                <div class="flex flex-col bg-cyan-500/5 border border-cyan-500/20 rounded-2xl overflow-hidden" data-status="in_progress" id="drop-in_progress">
+                    <div class="flex items-center justify-between px-4 py-3 border-b border-cyan-500/20 bg-cyan-500/10">
+                        <h3 class="text-xs font-bold uppercase tracking-widest text-cyan-400 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.6)]"></span> In Progress
+                        </h3>
+                        <span class="text-xs font-bold text-cyan-600 bg-slate-800 px-2 py-0.5 rounded-md" id="inprogress-count">0</span>
+                    </div>
+                    <div class="flex-1 overflow-y-auto p-3 space-y-3 task-list" id="col-in_progress"></div>
+                </div>
+
+                
+                <div class="flex flex-col bg-green-500/5 border border-green-500/20 rounded-2xl overflow-hidden" data-status="done" id="drop-done">
+                    <div class="flex items-center justify-between px-4 py-3 border-b border-green-500/20 bg-green-500/10">
+                        <h3 class="text-xs font-bold uppercase tracking-widest text-green-400 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-green-500"></span> Completed
+                        </h3>
+                        <span class="text-xs font-bold text-green-700 bg-slate-800 px-2 py-0.5 rounded-md" id="done-count">0</span>
+                    </div>
+                    <div class="flex-1 overflow-y-auto p-3 space-y-3 task-list" id="col-done"></div>
+                </div>
+
+                
+                <div class="flex flex-col bg-red-500/5 border border-red-500/20 rounded-2xl overflow-hidden" data-status="overdue" id="drop-overdue">
+                    <div class="flex items-center justify-between px-4 py-3 border-b border-red-500/20 bg-red-500/10">
+                        <h3 class="text-xs font-bold uppercase tracking-widest text-red-400 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]"></span> Overdue
+                        </h3>
+                        <span class="text-xs font-bold text-red-700 bg-slate-800 px-2 py-0.5 rounded-md" id="overdue-count">0</span>
+                    </div>
+                    <div class="flex-1 overflow-y-auto p-3 space-y-3 task-list" id="col-overdue"></div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    
+    <div id="profile-modal" class="fixed inset-0 z-50 flex items-center justify-center opacity-0 pointer-events-none">
+        <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-md" id="profile-backdrop"></div>
+        <form id="profile-form" class="relative bg-slate-800/90 border border-slate-700 rounded-3xl w-full max-w-sm p-8 shadow-2xl shadow-cyan-900/10 flex flex-col gap-5 translate-y-8">
+            <h3 class="text-2xl font-black text-slate-100 border-b border-slate-700/50 pb-4">Edit Profile</h3>
+            
+            <div>
+                <label class="block text-xs font-medium text-slate-400 mb-1 uppercase tracking-wider">Display Name</label>
+                <input type="text" id="profile-name" value="{{ current_user.name or '' }}" required placeholder="Your Name" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-cyan-500 transition-colors placeholder-slate-600">
+            </div>
+            
+            <div>
+                <label class="block text-xs font-medium text-slate-400 mb-1 uppercase tracking-wider">Avatar URL</label>
+                <input type="url" id="profile-avatar" value="{{ current_user.avatar_url or '' }}" placeholder="https://..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-cyan-500 transition-colors placeholder-slate-600">
+            </div>
+
+            <div class="flex justify-end gap-3 mt-4 pt-4 border-t border-slate-700/50">
+                <button type="button" id="close-profile-btn" class="px-6 py-2.5 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-700/50 transition">Cancel</button>
+                <button type="submit" class="px-6 py-2.5 bg-linear-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-sm font-bold rounded-xl shadow-lg active:scale-95 transition-all">Save Profile</button>
+            </div>
+        </form>
+    </div>
+
+    
+    <div id="view-modal" class="fixed inset-0 z-50 flex items-center justify-center opacity-0 pointer-events-none">
+        <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-md" id="view-backdrop"></div>
+        <div class="relative bg-slate-800/90 border border-slate-700 rounded-3xl w-full max-w-2xl p-8 shadow-2xl shadow-cyan-900/10 translate-y-8 flex flex-col gap-5" id="view-content">
+            <div class="flex items-center justify-between border-b border-slate-700/50 pb-4">
+                <h3 id="view-title" class="text-3xl font-black text-slate-100"></h3>
+                <div class="flex items-center gap-3">
+                    <span id="view-status" class="px-3 py-1 bg-slate-800 text-slate-300 rounded-full text-xs font-bold uppercase tracking-wider"></span>
+                    <span id="view-priority" class="px-3 py-1 bg-slate-800 text-slate-300 rounded-full text-xs font-bold uppercase tracking-wider"></span>
+                </div>
+            </div>
+            
+            <div class="flex gap-8 text-sm font-medium text-slate-400">
+                <div>
+                    <span class="block text-xs uppercase tracking-widest text-slate-500 mb-1">Start Date</span>
+                    <span id="view-start">--</span>
+                </div>
+                <div>
+                    <span class="block text-xs uppercase tracking-widest text-slate-500 mb-1">Due Date</span>
+                    <span id="view-due">--</span>
+                </div>
+            </div>
+
+            <div class="flex-1 mt-2">
+                <span class="block text-xs uppercase tracking-widest text-slate-500 mb-2">Description</span>
+                <p id="view-desc" class="text-slate-300 leading-relaxed whitespace-pre-wrap">No description provided.</p>
+            </div>
+
+            <div class="flex justify-between items-center mt-6 pt-4 border-t border-slate-700/50">
+                <button type="button" onclick="window.delTaskFromView()" class="px-6 py-2.5 rounded-xl text-sm font-bold text-red-400 hover:bg-red-500/10 transition">Delete</button>
+                <div class="flex gap-3">
+                    <button type="button" id="start-focus-btn" class="px-6 py-2.5 rounded-xl text-sm font-bold text-cyan-400 hover:bg-cyan-500/10 border border-cyan-500/30 transition shadow-[0_0_10px_rgba(34,211,238,0.1)] focus:outline-none">Deep Work</button>
+                    <button type="button" id="close-view-btn" class="px-4 py-2.5 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-700/50 transition">Close</button>
+                    <button type="button" id="edit-task-btn" class="px-6 py-2.5 bg-linear-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-sm font-bold rounded-xl shadow-lg active:scale-95 transition-all">Edit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <div id="focus-modal" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center opacity-0 pointer-events-none">
+        <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-md" id="modal-backdrop"></div>
+        <form id="task-form" class="relative bg-slate-900 border border-slate-700/60 rounded-t-3xl sm:rounded-3xl w-full sm:max-w-xl shadow-2xl shadow-black/50 translate-y-8 flex flex-col max-h-[90vh] overflow-y-auto">
+            <input type="hidden" id="task-id">
+
+            
+            <div class="p-6 pb-0">
+                <div class="flex items-center justify-between mb-4">
+                    <p id="form-mode-label" class="text-xs font-bold uppercase tracking-widest text-cyan-400">New Task</p>
+                    <button type="button" id="close-modal" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+                <input type="text" id="task-title" required placeholder="What needs to be done?" class="w-full bg-transparent text-2xl font-black text-slate-100 placeholder-slate-600 focus:outline-none border-b-2 border-slate-700 focus:border-cyan-500 transition-colors pb-3 mb-4">
+            </div>
+
+            
+            <div class="px-6">
+                <textarea id="task-desc" rows="3" placeholder="Add notes, details, or context..." class="w-full bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-3 text-sm text-slate-300 focus:outline-none focus:border-cyan-500/60 resize-none placeholder-slate-600 transition-colors"></textarea>
+            </div>
+
+            
+            <div class="px-6 mt-4 grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Status</label>
+                    <select id="task-status" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-cyan-500 transition-colors cursor-pointer">
+                        <option value="todo">📋 To Do</option>
+                        <option value="in_progress">⚡ In Progress</option>
+                        <option value="done">✅ Done</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Priority</label>
+                    <select id="task-priority" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-cyan-500 transition-colors cursor-pointer">
+                        <option value="low">🟢 Low</option>
+                        <option value="medium" selected>🟡 Medium</option>
+                        <option value="high">🔴 High</option>
+                    </select>
+                </div>
+            </div>
+
+            
+            <div class="px-6 mt-4">
+                <label class="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">Dates</label>
+
+                
+                <div class="flex flex-wrap gap-3 mb-3">
+                    <label class="flex items-center gap-2 cursor-pointer group">
+                        <div class="relative">
+                            <input type="checkbox" id="use-current-date" class="sr-only peer">
+                            <div class="w-4 h-4 rounded border border-slate-600 peer-checked:bg-cyan-500 peer-checked:border-cyan-500 transition-all flex items-center justify-center">
+                                <svg class="w-2.5 h-2.5 text-white opacity-0 peer-checked:opacity-100 absolute" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>
+                            </div>
+                        </div>
+                        <span class="text-xs font-medium text-slate-400 group-hover:text-slate-200 transition-colors">Start now</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer group">
+                        <div class="relative">
+                            <input type="checkbox" id="use-24h-due" class="sr-only peer">
+                            <div class="w-4 h-4 rounded border border-slate-600 peer-checked:bg-cyan-500 peer-checked:border-cyan-500 transition-all flex items-center justify-center">
+                                <svg class="w-2.5 h-2.5 text-white opacity-0 peer-checked:opacity-100 absolute" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>
+                            </div>
+                        </div>
+                        <span class="text-xs font-medium text-slate-400 group-hover:text-slate-200 transition-colors">Due in 24 hours</span>
+                    </label>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs text-slate-500 mb-1">Start</label>
+                        <input type="datetime-local" id="task-start" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-cyan-500 scheme-dark transition-colors">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-500 mb-1">Due</label>
+                        <input type="datetime-local" id="task-due" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-cyan-500 scheme-dark transition-colors">
+                    </div>
+                </div>
+            </div>
+
+            
+            <div class="px-6 py-5 mt-4 flex justify-between items-center border-t border-slate-800">
+                <button type="button" id="close-modal-secondary" class="px-4 py-2 rounded-xl text-sm font-bold text-slate-500 hover:text-slate-300 transition-colors">Cancel</button>
+                <button type="submit" id="save-task" class="px-6 py-2.5 bg-linear-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-sm font-bold rounded-xl shadow-lg shadow-cyan-900/30 active:scale-95 transition-all flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    Save Task
+                </button>
+            </div>
+        </form>
+    </div>
+
+    
+    <div id="zen-focus-modal" class="fixed inset-0 z-60 flex flex-col items-center justify-center opacity-0 pointer-events-none bg-slate-900 transition-opacity duration-700">
+        <button id="exit-focus-btn" class="absolute top-8 left-8 text-slate-500 hover:text-white flex items-center gap-2 font-bold tracking-widest text-xs uppercase transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+            Exit Flow
+        </button>
+
+        <div class="text-center max-w-2xl w-full px-8 translate-y-8 transition-transform duration-700" id="zen-focus-content">
+            <p class="text-cyan-400 font-bold tracking-widest uppercase text-sm mb-4">Deep Work Session</p>
+            <h2 id="focus-task-title" class="text-4xl md:text-5xl font-black text-slate-100 mb-16 leading-tight">...</h2>
+            
+            <div class="relative w-64 h-64 md:w-80 md:h-80 mx-auto mb-16 flex items-center justify-center group">
+                
+                <svg class="absolute inset-0 w-full h-full -rotate-90 pointer-events-none" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="48" class="stroke-slate-800" stroke-width="2" fill="none" />
+                    <circle id="focus-progress-ring" cx="50" cy="50" r="48" class="stroke-cyan-400 drop-shadow-[0_0_12px_rgba(34,211,238,0.5)] transition-all duration-1000 ease-linear" stroke-width="2" fill="none" stroke-dasharray="301.59" stroke-dashoffset="0" stroke-linecap="round" />
+                </svg>
+                
+                <div id="focus-time-display" class="text-6xl md:text-7xl font-light tracking-tighter text-white tabular-nums">25:00</div>
+            </div>
+
+            <div class="flex items-center justify-center gap-6">
+                
+                <button id="toggle-timer-btn" class="w-16 h-16 rounded-full bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 flex items-center justify-center shadow-[0_0_20px_rgba(34,211,238,0.1)] active:scale-95 transition-all">
+                    <svg id="icon-play" class="w-6 h-6 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    <svg id="icon-pause" class="w-6 h-6 hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                </button>
+                
+                <button id="complete-focus-btn" class="px-6 py-3 rounded-xl bg-slate-800 hover:bg-green-500/20 text-slate-400 hover:text-green-400 font-bold uppercase tracking-widest text-xs transition-colors border border-slate-700">
+                    Complete Task
+                </button>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

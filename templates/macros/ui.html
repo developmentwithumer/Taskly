@@ -1,0 +1,38 @@
+{% macro primary_button(text, onclick='', id='', type='button', class='') %}
+<button 
+    id="{{ id }}"
+    type="{{ type }}"
+    onclick="{{ onclick }}"
+    class="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 hover:scale-105 active:scale-95 text-white font-bold rounded-2xl shadow-lg shadow-cyan-500/20 transition-all duration-300 {{ class }}">
+    {{ text }}
+</button>
+{% endmacro %}
+
+{% macro card(title='', icon_name='default', class='') %}
+<div class="p-8 rounded-3xl bg-slate-800/50 border border-slate-700 hover:border-cyan-500/50 transition-all duration-300 backdrop-blur-sm group {{ class }}">
+    <div class="w-12 h-12 bg-cyan-500/10 rounded-2xl flex items-center justify-center mb-6 text-cyan-400 group-hover:bg-cyan-500/20 transition-colors">
+        {% if icon_name == 'bolt' %}
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+        {% elif icon_name == 'sync' %}
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+        {% elif icon_name == 'layout' %}
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/></svg>
+        {% else %}
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+        {% endif %}
+    </div>
+    <h3 class="text-2xl font-bold mb-3">{{ title }}</h3>
+    <div class="text-slate-400 leading-relaxed">
+        {{ caller() }}
+    </div>
+</div>
+{% endmacro %}
+
+{% macro input(placeholder='', type='text', id='', name='', class='') %}
+<input 
+    type="{{ type }}" 
+    placeholder="{{ placeholder }}" 
+    id="{{ id }}" 
+    name="{{ name }}"
+    class="w-full px-5 py-3 bg-slate-800 border border-slate-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-cyan-500/50 transition-all duration-200 {{ class }}">
+{% endmacro %}
