@@ -1,479 +1,900 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" class="scroll-smooth">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Taskly | Organize Work and Find Your Flow</title>
-    <meta name="description" content="Taskly is a beautifully focused task manager. Organize your workload with a drag-and-drop Kanban board, stay productive with focus timers, and keep everything in sync.">
-    <meta name="keywords" content="task manager, kanban board, pomodoro timer, productivity app, focus, dark mode">
-    <meta name="theme-color" content="#020617">
-    
+    <meta
+      name="description"
+      content="Taskly is a beautifully focused task manager. Organize your workload with a drag-and-drop Kanban board, stay productive with focus timers, and keep everything in sync."
+    />
+    <meta
+      name="keywords"
+      content="task manager, kanban board, pomodoro timer, productivity app, focus, dark mode"
+    />
+    <meta name="theme-color" content="#020617" />
+
     <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://taskly.app/">
-    <meta property="og:title" content="Taskly | Organize Work and Find Your Flow">
-    <meta property="og:description" content="Taskly is a beautifully focused task manager. Organize your workload with a drag-and-drop Kanban board, stay productive with focus timers, and keep everything in sync.">
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://taskly.app/" />
+    <meta
+      property="og:title"
+      content="Taskly | Organize Work and Find Your Flow"
+    />
+    <meta
+      property="og:description"
+      content="Taskly is a beautifully focused task manager. Organize your workload with a drag-and-drop Kanban board, stay productive with focus timers, and keep everything in sync."
+    />
 
     <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://taskly.app/">
-    <meta property="twitter:title" content="Taskly | Organize Work and Find Your Flow">
-    <meta property="twitter:description" content="Taskly is a beautifully focused task manager. Organize your workload with a drag-and-drop Kanban board, stay productive with focus timers, and keep everything in sync.">
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://taskly.app/" />
+    <meta
+      property="twitter:title"
+      content="Taskly | Organize Work and Find Your Flow"
+    />
+    <meta
+      property="twitter:description"
+      content="Taskly is a beautifully focused task manager. Organize your workload with a drag-and-drop Kanban board, stay productive with focus timers, and keep everything in sync."
+    />
 
     <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2306b6d4' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 13l4 4L19 7'/%3E%3C/svg%3E">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2306b6d4' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 13l4 4L19 7'/%3E%3C/svg%3E"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/main.css') }}"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
     <style>
-        * { font-family: 'Inter', sans-serif; }
+      * {
+        font-family: "Inter", sans-serif;
+      }
 
-        /* Animated gradient border on hero CTA */
-        .btn-glow {
-            position: relative;
-            background: linear-gradient(135deg, #06b6d4, #3b82f6);
-            box-shadow: 0 0 32px rgba(6,182,212,.35), 0 8px 24px rgba(0,0,0,.4);
-            transition: all .3s;
-        }
-        .btn-glow:hover {
-            box-shadow: 0 0 48px rgba(6,182,212,.55), 0 8px 32px rgba(0,0,0,.5);
-            transform: translateY(-2px);
-        }
+      /* Animated gradient border on hero CTA */
+      .btn-glow {
+        position: relative;
+        background: linear-gradient(135deg, #06b6d4, #3b82f6);
+        box-shadow:
+          0 0 32px rgba(6, 182, 212, 0.35),
+          0 8px 24px rgba(0, 0, 0, 0.4);
+        transition: all 0.3s;
+      }
+      .btn-glow:hover {
+        box-shadow:
+          0 0 48px rgba(6, 182, 212, 0.55),
+          0 8px 32px rgba(0, 0, 0, 0.5);
+        transform: translateY(-2px);
+      }
 
-        /* Floating particle canvas */
-        #particle-canvas {
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-            opacity: .5;
-        }
+      /* Floating particle canvas */
+      #particle-canvas {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0.5;
+      }
 
-        /* Feature card hover lift */
-        .feature-card {
-            transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease;
-        }
-        .feature-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 24px 48px -12px rgba(6,182,212,.15);
-            border-color: rgba(6,182,212,.3);
-        }
+      /* Feature card hover lift */
+      .feature-card {
+        transition:
+          transform 0.3s ease,
+          box-shadow 0.3s ease,
+          border-color 0.3s ease;
+      }
+      .feature-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 24px 48px -12px rgba(6, 182, 212, 0.15);
+        border-color: rgba(6, 182, 212, 0.3);
+      }
 
-        /* Smooth pseudo-stat counter animation */
-        .stat-num { display: inline-block; }
+      /* Smooth pseudo-stat counter animation */
+      .stat-num {
+        display: inline-block;
+      }
 
-        /* Dashboard preview card styles */
-        .preview-card {
-            background: rgba(30,41,59,.7);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(100,116,139,.25);
-            border-radius: 16px;
-            padding: 16px;
-        }
+      /* Dashboard preview card styles */
+      .preview-card {
+        background: rgba(30, 41, 59, 0.7);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(100, 116, 139, 0.25);
+        border-radius: 16px;
+        padding: 16px;
+      }
 
-        /* Glow ring on preview frame */
-        .preview-frame {
-            box-shadow: 0 0 0 1px rgba(6,182,212,.2), 0 32px 64px -16px rgba(6,182,212,.2), 0 64px 128px -32px rgba(0,0,0,.6);
-        }
+      /* Glow ring on preview frame */
+      .preview-frame {
+        box-shadow:
+          0 0 0 1px rgba(6, 182, 212, 0.2),
+          0 32px 64px -16px rgba(6, 182, 212, 0.2),
+          0 64px 128px -32px rgba(0, 0, 0, 0.6);
+      }
 
-        /* Scroll reveal initial states */
-        .reveal { opacity: 0; transform: translateY(40px); }
+      /* Scroll reveal initial states */
+      .reveal {
+        opacity: 0;
+        transform: translateY(40px);
+      }
     </style>
-</head>
-<body class="bg-slate-950 text-slate-100 min-h-screen tracking-tight overflow-x-hidden selection:bg-cyan-500/30">
-
+  </head>
+  <body
+    class="bg-slate-950 text-slate-100 min-h-screen tracking-tight overflow-x-hidden selection:bg-cyan-500/30"
+  >
     <!-- ── Navigation ─────────────────────────────────────────────────────────── -->
-    <header id="nav" class="fixed w-full top-0 z-50 transition-all duration-300">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-            <!-- Brand -->
-            <div class="flex items-center gap-2.5 nav-brand">
-                <div class="w-8 h-8 rounded-xl bg-linear-to-tr from-cyan-400 to-blue-500 flex items-center justify-center shadow-lg shadow-cyan-500/30">
-                    <svg class="w-4.5 h-4.5 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                </div>
-                <span class="text-xl font-black tracking-tight text-white">Taskly.</span>
-            </div>
-
-            <!-- Links -->
-            <nav class="hidden md:flex items-center gap-8 nav-links">
-                <a href="#features" class="text-sm font-semibold text-slate-400 hover:text-white transition-colors">Features</a>
-                <a href="#how-it-works" class="text-sm font-semibold text-slate-400 hover:text-white transition-colors">How it Works</a>
-            </nav>
-
-            <!-- Actions -->
-            <div class="flex items-center gap-3 nav-actions">
-                <a href="{{ url_for('auth.login') }}" class="text-sm font-bold text-slate-300 hover:text-white transition-colors px-3 py-2">Log In</a>
-                <a href="{{ url_for('auth.register') }}" class="px-5 py-2.5 btn-glow text-white text-sm font-bold rounded-xl">Start Free →</a>
-            </div>
+    <header
+      id="nav"
+      class="fixed w-full top-0 z-50 transition-all duration-300"
+    >
+      <div
+        class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between"
+      >
+        <!-- Brand -->
+        <div class="flex items-center gap-2.5 nav-brand">
+          <div
+            class="w-8 h-8 rounded-xl bg-linear-to-tr from-cyan-400 to-blue-500 flex items-center justify-center shadow-lg shadow-cyan-500/30"
+          >
+            <svg
+              class="w-4.5 h-4.5 text-slate-900"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              stroke-width="3"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+          </div>
+          <span class="text-xl font-black tracking-tight text-white"
+            >Taskly.</span
+          >
         </div>
+
+        <!-- Links -->
+        <nav class="hidden md:flex items-center gap-8 nav-links">
+          <a
+            href="#features"
+            class="text-sm font-semibold text-slate-400 hover:text-white transition-colors"
+            >Features</a
+          >
+          <a
+            href="#how-it-works"
+            class="text-sm font-semibold text-slate-400 hover:text-white transition-colors"
+            >How it Works</a
+          >
+        </nav>
+
+        <!-- Actions -->
+        <div class="flex items-center gap-3 nav-actions">
+          <a
+            href="{{ url_for('auth.login') }}"
+            class="text-sm font-bold text-slate-300 hover:text-white transition-colors px-3 py-2"
+            >Log In</a
+          >
+          <a
+            href="{{ url_for('auth.register') }}"
+            class="px-5 py-2.5 btn-glow text-white text-sm font-bold rounded-xl"
+            >Start Free →</a
+          >
+        </div>
+      </div>
     </header>
 
     <!-- ── Hero ───────────────────────────────────────────────────────────────── -->
-    <section class="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden px-6">
+    <section
+      class="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden px-6"
+    >
+      <!-- Particle canvas -->
+      <canvas id="particle-canvas"></canvas>
 
-        <!-- Particle canvas -->
-        <canvas id="particle-canvas"></canvas>
+      <!-- Radial glow -->
+      <div
+        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-255 h-255 rounded-full pointer-events-none"
+        style="
+          background: radial-gradient(
+            circle,
+            rgba(6, 182, 212, 0.12) 0%,
+            transparent 70%
+          );
+        "
+      ></div>
 
-        <!-- Radial glow -->
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[900px] rounded-full pointer-events-none"
-             style="background: radial-gradient(circle, rgba(6,182,212,.12) 0%, transparent 70%)"></div>
-
-        <div class="max-w-7xl mx-auto text-center relative z-10">
-            <!-- Badge -->
-            <div class="hero-badge inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-800/60 border border-slate-700/60 text-xs font-bold text-cyan-400 mb-8 backdrop-blur-sm">
-                <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
-                Live Sync · Kanban Board · Focus Timers · Dark Mode
-            </div>
-
-            <!-- Headline -->
-            <h1 class="hero-title text-5xl sm:text-7xl lg:text-8xl font-black tracking-tighter leading-[1.05] mb-8">
-                Organize your work and<br class="hidden sm:block">
-                find your
-                <span class="relative inline-block">
-                    <span class="bg-linear-to-r from-cyan-300 via-blue-400 to-violet-400 bg-clip-text text-transparent">natural flow.</span>
-                    <span class="absolute -bottom-1 left-0 right-0 h-px bg-linear-to-r from-cyan-400/0 via-cyan-400/60 to-cyan-400/0"></span>
-                </span>
-            </h1>
-
-            <!-- Subtitle -->
-            <p class="hero-subtitle text-lg sm:text-xl text-slate-400 mb-12 max-w-2xl mx-auto leading-relaxed font-medium">
-                A beautifully simple task manager designed to keep you focused. Use our visual drag-and-drop board, stay on track with built-in productivity timers, and instantly sync your progress across all your devices.
-            </p>
-
-            <!-- CTAs -->
-            <div class="hero-ctas flex flex-col sm:flex-row justify-center gap-4 mb-20">
-                <a href="{{ url_for('auth.register') }}" class="btn-glow inline-flex items-center justify-center gap-2 px-8 py-4 text-white font-bold rounded-2xl text-base">
-                    Get Started for Free
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
-                </a>
-                <a href="{{ url_for('auth.login') }}" class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 text-slate-200 font-bold rounded-2xl text-base transition-all hover:border-slate-600">
-                    Sign In
-                </a>
-            </div>
-
-            <!-- Dashboard preview mockup (pure HTML, no image dependency) -->
-            <div class="hero-preview mx-auto max-w-5xl">
-                <div class="preview-frame rounded-2xl overflow-hidden border border-slate-700/50 bg-slate-900">
-                    <!-- Fake browser chrome -->
-                    <div class="px-4 py-2.5 bg-slate-800/80 border-b border-slate-700/50 flex items-center gap-2">
-                        <div class="flex gap-1.5">
-                            <div class="w-3 h-3 rounded-full bg-red-500/70"></div>
-                            <div class="w-3 h-3 rounded-full bg-amber-400/70"></div>
-                            <div class="w-3 h-3 rounded-full bg-green-500/70"></div>
-                        </div>
-                        <div class="flex-1 mx-4 h-5 bg-slate-700/50 rounded-md flex items-center justify-center">
-                            <span class="text-[10px] text-slate-500 font-mono">taskly.app/dashboard</span>
-                        </div>
-                    </div>
-                    <!-- Fake dashboard content -->
-                    <div class="p-4 grid grid-cols-4 gap-3 bg-slate-900">
-                        <!-- Sidebar preview -->
-                        <div class="col-span-1 bg-slate-950/80 rounded-xl p-3 space-y-2 hidden sm:block">
-                            <div class="text-xs font-black text-transparent bg-linear-to-r from-cyan-400 to-violet-400 bg-clip-text mb-3">Taskly.</div>
-                            <div class="h-2 w-16 bg-cyan-500/30 rounded-full"></div>
-                            <div class="h-2 w-12 bg-slate-700 rounded-full"></div>
-                            <div class="h-2 w-14 bg-slate-700 rounded-full"></div>
-                            <div class="mt-4 space-y-1.5">
-                                <div class="h-1.5 w-8 bg-slate-700 rounded-full"></div>
-                                <div class="h-1.5 w-10 bg-cyan-500/40 rounded-full"></div>
-                                <div class="h-1.5 w-7 bg-slate-700 rounded-full"></div>
-                                <div class="h-1.5 w-9 bg-slate-700 rounded-full"></div>
-                            </div>
-                        </div>
-                        <!-- Board preview -->
-                        <div class="col-span-4 sm:col-span-3 grid grid-cols-2 gap-2">
-                            <!-- Todo column -->
-                            <div class="bg-slate-800/40 rounded-xl p-2.5 space-y-2">
-                                <div class="flex items-center gap-1.5 mb-2">
-                                    <div class="w-1.5 h-1.5 rounded-full bg-slate-500"></div>
-                                    <span class="text-[9px] font-black uppercase tracking-widest text-slate-500">To Do</span>
-                                </div>
-                                <div class="preview-card space-y-1.5">
-                                    <div class="h-1.5 w-20 bg-slate-500 rounded-full"></div>
-                                    <div class="h-1.5 w-14 bg-slate-600 rounded-full"></div>
-                                    <div class="h-1.5 w-8 bg-red-500/40 rounded-full"></div>
-                                </div>
-                                <div class="preview-card space-y-1.5">
-                                    <div class="h-1.5 w-16 bg-slate-500 rounded-full"></div>
-                                    <div class="h-1.5 w-12 bg-slate-600 rounded-full"></div>
-                                    <div class="h-1.5 w-10 bg-amber-500/40 rounded-full"></div>
-                                </div>
-                            </div>
-                            <!-- In Progress column -->
-                            <div class="bg-cyan-500/5 rounded-xl p-2.5 space-y-2 border border-cyan-500/15">
-                                <div class="flex items-center gap-1.5 mb-2">
-                                    <div class="w-1.5 h-1.5 rounded-full bg-cyan-400" style="box-shadow:0 0 6px rgba(34,211,238,.6)"></div>
-                                    <span class="text-[9px] font-black uppercase tracking-widest text-cyan-500">In Progress</span>
-                                </div>
-                                <div class="preview-card border-cyan-500/20 space-y-1.5">
-                                    <div class="h-1.5 w-18 bg-cyan-400/40 rounded-full"></div>
-                                    <div class="h-1.5 w-14 bg-slate-600 rounded-full"></div>
-                                    <div class="h-1.5 w-10 bg-cyan-500/20 rounded-full"></div>
-                                </div>
-                            </div>
-                            <!-- Done column -->
-                            <div class="bg-green-500/5 rounded-xl p-2.5 space-y-2 border border-green-500/15">
-                                <div class="flex items-center gap-1.5 mb-2">
-                                    <div class="w-1.5 h-1.5 rounded-full bg-green-500"></div>
-                                    <span class="text-[9px] font-black uppercase tracking-widest text-green-500">Completed</span>
-                                </div>
-                                <div class="preview-card border-green-500/20 space-y-1.5 opacity-60">
-                                    <div class="h-1.5 w-20 bg-green-400/30 rounded-full"></div>
-                                    <div class="h-1.5 w-14 bg-slate-600 rounded-full"></div>
-                                </div>
-                            </div>
-                            <!-- Overdue column -->
-                            <div class="bg-red-500/5 rounded-xl p-2.5 space-y-2 border border-red-500/15">
-                                <div class="flex items-center gap-1.5 mb-2">
-                                    <div class="w-1.5 h-1.5 rounded-full bg-red-500"></div>
-                                    <span class="text-[9px] font-black uppercase tracking-widest text-red-500">Overdue</span>
-                                </div>
-                                <div class="preview-card border-red-500/20 space-y-1.5">
-                                    <div class="h-1.5 w-16 bg-red-400/40 rounded-full"></div>
-                                    <div class="h-1.5 w-10 bg-slate-600 rounded-full"></div>
-                                    <div class="h-1.5 w-7 bg-red-500/30 rounded-full"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Glow beneath preview -->
-                <div class="h-24 -mt-12 mx-12 rounded-full blur-3xl" style="background:radial-gradient(ellipse, rgba(6,182,212,.15) 0%, transparent 70%)"></div>
-            </div>
+      <div class="max-w-7xl mx-auto text-center relative z-10">
+        <!-- Badge -->
+        <div
+          class="hero-badge inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-800/60 border border-slate-700/60 text-xs font-bold text-cyan-400 mb-8 backdrop-blur-sm"
+        >
+          <span
+            class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"
+          ></span>
+          Live Sync · Kanban Board · Focus Timers · Dark Mode
         </div>
+
+        <!-- Headline -->
+        <h1
+          class="hero-title text-5xl sm:text-7xl lg:text-8xl font-black tracking-tighter leading-[1.05] mb-8"
+        >
+          Organize your work and<br class="hidden sm:block" />
+          find your
+          <span class="relative inline-block">
+            <span
+              class="bg-linear-to-r from-cyan-300 via-blue-400 to-violet-400 bg-clip-text text-transparent"
+              >natural flow.</span
+            >
+            <span
+              class="absolute -bottom-1 left-0 right-0 h-px bg-linear-to-r from-cyan-400/0 via-cyan-400/60 to-cyan-400/0"
+            ></span>
+          </span>
+        </h1>
+
+        <!-- Subtitle -->
+        <p
+          class="hero-subtitle text-lg sm:text-xl text-slate-400 mb-12 max-w-2xl mx-auto leading-relaxed font-medium"
+        >
+          A beautifully simple task manager designed to keep you focused. Use
+          our visual drag-and-drop board, stay on track with built-in
+          productivity timers, and instantly sync your progress across all your
+          devices.
+        </p>
+
+        <!-- CTAs -->
+        <div
+          class="hero-ctas flex flex-col sm:flex-row justify-center gap-4 mb-20"
+        >
+          <a
+            href="{{ url_for('auth.register') }}"
+            class="btn-glow inline-flex items-center justify-center gap-2 px-8 py-4 text-white font-bold rounded-2xl text-base"
+          >
+            Get Started for Free
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              stroke-width="2.5"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M14 5l7 7m0 0l-7 7m7-7H3"
+              />
+            </svg>
+          </a>
+          <a
+            href="{{ url_for('auth.login') }}"
+            class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 text-slate-200 font-bold rounded-2xl text-base transition-all hover:border-slate-600"
+          >
+            Sign In
+          </a>
+        </div>
+
+        <!-- Dashboard preview mockup (pure HTML, no image dependency) -->
+        <div class="hero-preview mx-auto max-w-5xl">
+          <div
+            class="preview-frame rounded-2xl overflow-hidden border border-slate-700/50 bg-slate-900"
+          >
+            <!-- Fake browser chrome -->
+            <div
+              class="px-4 py-2.5 bg-slate-800/80 border-b border-slate-700/50 flex items-center gap-2"
+            >
+              <div class="flex gap-1.5">
+                <div class="w-3 h-3 rounded-full bg-red-500/70"></div>
+                <div class="w-3 h-3 rounded-full bg-amber-400/70"></div>
+                <div class="w-3 h-3 rounded-full bg-green-500/70"></div>
+              </div>
+              <div
+                class="flex-1 mx-4 h-5 bg-slate-700/50 rounded-md flex items-center justify-center"
+              >
+                <span class="text-[10px] text-slate-500 font-mono"
+                  >taskly.app/dashboard</span
+                >
+              </div>
+            </div>
+            <!-- Fake dashboard content -->
+            <div class="p-4 grid grid-cols-4 gap-3 bg-slate-900">
+              <!-- Sidebar preview -->
+              <div
+                class="col-span-1 bg-slate-950/80 rounded-xl p-3 space-y-2 hidden sm:block"
+              >
+                <div
+                  class="text-xs font-black text-transparent bg-linear-to-r from-cyan-400 to-violet-400 bg-clip-text mb-3"
+                >
+                  Taskly.
+                </div>
+                <div class="h-2 w-16 bg-cyan-500/30 rounded-full"></div>
+                <div class="h-2 w-12 bg-slate-700 rounded-full"></div>
+                <div class="h-2 w-14 bg-slate-700 rounded-full"></div>
+                <div class="mt-4 space-y-1.5">
+                  <div class="h-1.5 w-8 bg-slate-700 rounded-full"></div>
+                  <div class="h-1.5 w-10 bg-cyan-500/40 rounded-full"></div>
+                  <div class="h-1.5 w-7 bg-slate-700 rounded-full"></div>
+                  <div class="h-1.5 w-9 bg-slate-700 rounded-full"></div>
+                </div>
+              </div>
+              <!-- Board preview -->
+              <div class="col-span-4 sm:col-span-3 grid grid-cols-2 gap-2">
+                <!-- Todo column -->
+                <div class="bg-slate-800/40 rounded-xl p-2.5 space-y-2">
+                  <div class="flex items-center gap-1.5 mb-2">
+                    <div class="w-1.5 h-1.5 rounded-full bg-slate-500"></div>
+                    <span
+                      class="text-[9px] font-black uppercase tracking-widest text-slate-500"
+                      >To Do</span
+                    >
+                  </div>
+                  <div class="preview-card space-y-1.5">
+                    <div class="h-1.5 w-20 bg-slate-500 rounded-full"></div>
+                    <div class="h-1.5 w-14 bg-slate-600 rounded-full"></div>
+                    <div class="h-1.5 w-8 bg-red-500/40 rounded-full"></div>
+                  </div>
+                  <div class="preview-card space-y-1.5">
+                    <div class="h-1.5 w-16 bg-slate-500 rounded-full"></div>
+                    <div class="h-1.5 w-12 bg-slate-600 rounded-full"></div>
+                    <div class="h-1.5 w-10 bg-amber-500/40 rounded-full"></div>
+                  </div>
+                </div>
+                <!-- In Progress column -->
+                <div
+                  class="bg-cyan-500/5 rounded-xl p-2.5 space-y-2 border border-cyan-500/15"
+                >
+                  <div class="flex items-center gap-1.5 mb-2">
+                    <div
+                      class="w-1.5 h-1.5 rounded-full bg-cyan-400"
+                      style="box-shadow: 0 0 6px rgba(34, 211, 238, 0.6)"
+                    ></div>
+                    <span
+                      class="text-[9px] font-black uppercase tracking-widest text-cyan-500"
+                      >In Progress</span
+                    >
+                  </div>
+                  <div class="preview-card border-cyan-500/20 space-y-1.5">
+                    <div class="h-1.5 w-18 bg-cyan-400/40 rounded-full"></div>
+                    <div class="h-1.5 w-14 bg-slate-600 rounded-full"></div>
+                    <div class="h-1.5 w-10 bg-cyan-500/20 rounded-full"></div>
+                  </div>
+                </div>
+                <!-- Done column -->
+                <div
+                  class="bg-green-500/5 rounded-xl p-2.5 space-y-2 border border-green-500/15"
+                >
+                  <div class="flex items-center gap-1.5 mb-2">
+                    <div class="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                    <span
+                      class="text-[9px] font-black uppercase tracking-widest text-green-500"
+                      >Completed</span
+                    >
+                  </div>
+                  <div
+                    class="preview-card border-green-500/20 space-y-1.5 opacity-60"
+                  >
+                    <div class="h-1.5 w-20 bg-green-400/30 rounded-full"></div>
+                    <div class="h-1.5 w-14 bg-slate-600 rounded-full"></div>
+                  </div>
+                </div>
+                <!-- Overdue column -->
+                <div
+                  class="bg-red-500/5 rounded-xl p-2.5 space-y-2 border border-red-500/15"
+                >
+                  <div class="flex items-center gap-1.5 mb-2">
+                    <div class="w-1.5 h-1.5 rounded-full bg-red-500"></div>
+                    <span
+                      class="text-[9px] font-black uppercase tracking-widest text-red-500"
+                      >Overdue</span
+                    >
+                  </div>
+                  <div class="preview-card border-red-500/20 space-y-1.5">
+                    <div class="h-1.5 w-16 bg-red-400/40 rounded-full"></div>
+                    <div class="h-1.5 w-10 bg-slate-600 rounded-full"></div>
+                    <div class="h-1.5 w-7 bg-red-500/30 rounded-full"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Glow beneath preview -->
+          <div
+            class="h-24 -mt-12 mx-12 rounded-full blur-3xl"
+            style="
+              background: radial-gradient(
+                ellipse,
+                rgba(6, 182, 212, 0.15) 0%,
+                transparent 70%
+              );
+            "
+          ></div>
+        </div>
+      </div>
     </section>
 
     <!-- ── Stats Bar ──────────────────────────────────────────────────────────── -->
     <section class="py-16 border-t border-slate-800/50 bg-slate-900/30">
-        <div class="max-w-5xl mx-auto px-6 grid grid-cols-3 gap-8 text-center reveal">
-            <div>
-                <div class="text-4xl font-black text-white stat-num" data-target="10000">0</div>
-                <div class="text-sm text-slate-500 font-medium mt-1">Tasks Completed</div>
-            </div>
-            <div>
-                <div class="text-4xl font-black bg-linear-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent stat-num" data-target="99">0</div>
-                <div class="text-sm text-slate-500 font-medium mt-1">Uptime %</div>
-            </div>
-            <div>
-                <div class="text-4xl font-black text-white stat-num" data-target="500">0</div>
-                <div class="text-sm text-slate-500 font-medium mt-1">Focus Sessions</div>
-            </div>
+      <div
+        class="max-w-5xl mx-auto px-6 grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-12 text-center reveal"
+      >
+        <div>
+          <div
+            class="text-4xl font-black text-white stat-num"
+            data-target="10000"
+          >
+            0
+          </div>
+          <div class="text-sm text-slate-500 font-medium mt-1">
+            Tasks Completed
+          </div>
         </div>
+        <div>
+          <div
+            class="text-4xl font-black bg-linear-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent stat-num"
+            data-target="99"
+          >
+            0
+          </div>
+          <div class="text-sm text-slate-500 font-medium mt-1">Uptime %</div>
+        </div>
+        <div>
+          <div
+            class="text-4xl font-black text-white stat-num"
+            data-target="500"
+          >
+            0
+          </div>
+          <div class="text-sm text-slate-500 font-medium mt-1">
+            Focus Sessions
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- ── Features ───────────────────────────────────────────────────────────── -->
     <section id="features" class="py-32 px-6">
-        <div class="max-w-7xl mx-auto">
-            <div class="text-center mb-20 reveal">
-                <div class="inline-block text-xs font-bold tracking-widest uppercase text-cyan-400 mb-4 px-3 py-1 bg-cyan-500/10 rounded-full border border-cyan-500/20">Features</div>
-                <h2 class="text-4xl md:text-5xl font-black text-white mt-4 tracking-tight">Everything you need to<br>do your best work</h2>
-                <p class="text-slate-400 mt-4 max-w-xl mx-auto">We stripped away the clutter and kept only what actually helps you stay productive, designed with care and absolute simplicity.</p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="feature-card col-span-1 md:col-span-2 p-8 rounded-3xl bg-slate-800/40 border border-slate-700/40 backdrop-blur-sm">
-                    <div class="w-12 h-12 rounded-2xl bg-cyan-500/15 text-cyan-400 flex items-center justify-center mb-6 border border-cyan-500/20">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                    </div>
-                    <h3 class="text-2xl font-bold text-white mb-3">Visual Kanban Board</h3>
-                    <p class="text-slate-400 leading-relaxed max-w-lg">Easily drag and drop your tasks across four smart columns: To Do, In Progress, Completed, and Overdue. Everything updates instantly across your devices so you never miss a beat.</p>
-                </div>
-
-                <div class="feature-card p-8 rounded-3xl bg-slate-800/40 border border-slate-700/40 backdrop-blur-sm">
-                    <div class="w-12 h-12 rounded-2xl bg-violet-500/15 text-violet-400 flex items-center justify-center mb-6 border border-violet-500/20">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    </div>
-                    <h3 class="text-2xl font-bold text-white mb-3">Deep Focus Mode</h3>
-                    <p class="text-slate-400 leading-relaxed">Block out distractions with our built-in 25 minute focus timer. The clean, fullscreen view helps you zone in on one task at a time, checking it off automatically when you are done.</p>
-                </div>
-
-                <div class="feature-card p-8 rounded-3xl bg-slate-800/40 border border-slate-700/40 backdrop-blur-sm">
-                    <div class="w-12 h-12 rounded-2xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center mb-6 border border-emerald-500/20">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    </div>
-                    <h3 class="text-2xl font-bold text-white mb-3">Smart Workflow</h3>
-                    <p class="text-slate-400 leading-relaxed">Tasks scheduled for today automatically move to your In Progress column. Any missed deadlines are clearly marked as Overdue, meaning less manual updates for you.</p>
-                </div>
-
-                <div class="feature-card col-span-1 md:col-span-2 p-8 rounded-3xl bg-slate-800/40 border border-slate-700/40 backdrop-blur-sm">
-                    <div class="w-12 h-12 rounded-2xl bg-blue-500/15 text-blue-400 flex items-center justify-center mb-6 border border-blue-500/20">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                    </div>
-                    <h3 class="text-2xl font-bold text-white mb-3">Lightning Fast Search</h3>
-                    <p class="text-slate-400 leading-relaxed max-w-lg">Find exactly what you need as soon as you start typing. Filter your entire board by title, status, or date without ever waiting for the page to reload.</p>
-                </div>
-            </div>
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-20 reveal">
+          <div
+            class="inline-block text-xs font-bold tracking-widest uppercase text-cyan-400 mb-4 px-3 py-1 bg-cyan-500/10 rounded-full border border-cyan-500/20"
+          >
+            Features
+          </div>
+          <h2
+            class="text-4xl md:text-5xl font-black text-white mt-4 tracking-tight"
+          >
+            Everything you need to<br />do your best work
+          </h2>
+          <p class="text-slate-400 mt-4 max-w-xl mx-auto">
+            We stripped away the clutter and kept only what actually helps you
+            stay productive, designed with care and absolute simplicity.
+          </p>
         </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div
+            class="feature-card col-span-1 md:col-span-2 p-8 rounded-3xl bg-slate-800/40 border border-slate-700/40 backdrop-blur-sm"
+          >
+            <div
+              class="w-12 h-12 rounded-2xl bg-cyan-500/15 text-cyan-400 flex items-center justify-center mb-6 border border-cyan-500/20"
+            >
+              <svg
+                class="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 10V3L4 14h7v7l9-11h-7z"
+                />
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold text-white mb-3">
+              Visual Kanban Board
+            </h3>
+            <p class="text-slate-400 leading-relaxed max-w-lg">
+              Easily drag and drop your tasks across four smart columns: To Do,
+              In Progress, Completed, and Overdue. Everything updates instantly
+              across your devices so you never miss a beat.
+            </p>
+          </div>
+
+          <div
+            class="feature-card p-8 rounded-3xl bg-slate-800/40 border border-slate-700/40 backdrop-blur-sm"
+          >
+            <div
+              class="w-12 h-12 rounded-2xl bg-violet-500/15 text-violet-400 flex items-center justify-center mb-6 border border-violet-500/20"
+            >
+              <svg
+                class="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold text-white mb-3">Deep Focus Mode</h3>
+            <p class="text-slate-400 leading-relaxed">
+              Block out distractions with our built-in 25 minute focus timer.
+              The clean, fullscreen view helps you zone in on one task at a
+              time, checking it off automatically when you are done.
+            </p>
+          </div>
+
+          <div
+            class="feature-card p-8 rounded-3xl bg-slate-800/40 border border-slate-700/40 backdrop-blur-sm"
+          >
+            <div
+              class="w-12 h-12 rounded-2xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center mb-6 border border-emerald-500/20"
+            >
+              <svg
+                class="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold text-white mb-3">Smart Workflow</h3>
+            <p class="text-slate-400 leading-relaxed">
+              Tasks scheduled for today automatically move to your In Progress
+              column. Any missed deadlines are clearly marked as Overdue,
+              meaning less manual updates for you.
+            </p>
+          </div>
+
+          <div
+            class="feature-card col-span-1 md:col-span-2 p-8 rounded-3xl bg-slate-800/40 border border-slate-700/40 backdrop-blur-sm"
+          >
+            <div
+              class="w-12 h-12 rounded-2xl bg-blue-500/15 text-blue-400 flex items-center justify-center mb-6 border border-blue-500/20"
+            >
+              <svg
+                class="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold text-white mb-3">
+              Lightning Fast Search
+            </h3>
+            <p class="text-slate-400 leading-relaxed max-w-lg">
+              Find exactly what you need as soon as you start typing. Filter
+              your entire board by title, status, or date without ever waiting
+              for the page to reload.
+            </p>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- ── How it Works ───────────────────────────────────────────────────────── -->
-    <section id="how-it-works" class="py-32 px-6 border-t border-slate-800/50 bg-slate-900/20">
-        <div class="max-w-4xl mx-auto">
-            <div class="text-center mb-20 reveal">
-                <div class="inline-block text-xs font-bold tracking-widest uppercase text-violet-400 mb-4 px-3 py-1 bg-violet-500/10 rounded-full border border-violet-500/20">How It Works</div>
-                <h2 class="text-4xl md:text-5xl font-black text-white mt-4 tracking-tight">Get started in less than a minute</h2>
-            </div>
-            <div class="space-y-8">
-                <div class="flex items-start gap-6 reveal">
-                    <div class="w-10 h-10 rounded-full bg-cyan-500/15 border border-cyan-500/30 text-cyan-400 font-black text-sm flex items-center justify-center shrink-0">1</div>
-                    <div>
-                        <h3 class="text-lg font-bold text-white mb-1">Create your free account</h3>
-                        <p class="text-slate-400">Sign up with your email or log in instantly using GitHub. We do not require a credit card.</p>
-                    </div>
-                </div>
-                <div class="flex items-start gap-6 reveal">
-                    <div class="w-10 h-10 rounded-full bg-blue-500/15 border border-blue-500/30 text-blue-400 font-black text-sm flex items-center justify-center shrink-0">2</div>
-                    <div>
-                        <h3 class="text-lg font-bold text-white mb-1">Add your first task</h3>
-                        <p class="text-slate-400">Click the add button, type your goal, and set a due date. Use our smart shortcuts to schedule tasks for today or tomorrow in a single click.</p>
-                    </div>
-                </div>
-                <div class="flex items-start gap-6 reveal">
-                    <div class="w-10 h-10 rounded-full bg-violet-500/15 border border-violet-500/30 text-violet-400 font-black text-sm flex items-center justify-center shrink-0">3</div>
-                    <div>
-                        <h3 class="text-lg font-bold text-white mb-1">Start focusing immediately</h3>
-                        <p class="text-slate-400">Pick a task, start your timer, and enjoy a distraction free environment. Once the time is up, your task is automatically marked as complete.</p>
-                    </div>
-                </div>
-            </div>
+    <section
+      id="how-it-works"
+      class="py-32 px-6 border-t border-slate-800/50 bg-slate-900/20"
+    >
+      <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-20 reveal">
+          <div
+            class="inline-block text-xs font-bold tracking-widest uppercase text-violet-400 mb-4 px-3 py-1 bg-violet-500/10 rounded-full border border-violet-500/20"
+          >
+            How It Works
+          </div>
+          <h2
+            class="text-4xl md:text-5xl font-black text-white mt-4 tracking-tight"
+          >
+            Get started in less than a minute
+          </h2>
         </div>
+        <div class="space-y-8">
+          <div class="flex items-start gap-6 reveal">
+            <div
+              class="w-10 h-10 rounded-full bg-cyan-500/15 border border-cyan-500/30 text-cyan-400 font-black text-sm flex items-center justify-center shrink-0"
+            >
+              1
+            </div>
+            <div>
+              <h3 class="text-lg font-bold text-white mb-1">
+                Create your free account
+              </h3>
+              <p class="text-slate-400">
+                Sign up with your email or log in instantly using GitHub. We do
+                not require a credit card.
+              </p>
+            </div>
+          </div>
+          <div class="flex items-start gap-6 reveal">
+            <div
+              class="w-10 h-10 rounded-full bg-blue-500/15 border border-blue-500/30 text-blue-400 font-black text-sm flex items-center justify-center shrink-0"
+            >
+              2
+            </div>
+            <div>
+              <h3 class="text-lg font-bold text-white mb-1">
+                Add your first task
+              </h3>
+              <p class="text-slate-400">
+                Click the add button, type your goal, and set a due date. Use
+                our smart shortcuts to schedule tasks for today or tomorrow in a
+                single click.
+              </p>
+            </div>
+          </div>
+          <div class="flex items-start gap-6 reveal">
+            <div
+              class="w-10 h-10 rounded-full bg-violet-500/15 border border-violet-500/30 text-violet-400 font-black text-sm flex items-center justify-center shrink-0"
+            >
+              3
+            </div>
+            <div>
+              <h3 class="text-lg font-bold text-white mb-1">
+                Start focusing immediately
+              </h3>
+              <p class="text-slate-400">
+                Pick a task, start your timer, and enjoy a distraction free
+                environment. Once the time is up, your task is automatically
+                marked as complete.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- ── CTA ────────────────────────────────────────────────────────────────── -->
     <section class="py-32 px-6 relative overflow-hidden">
-        <div class="absolute inset-0 pointer-events-none" style="background: radial-gradient(ellipse at center, rgba(6,182,212,.08) 0%, transparent 65%)"></div>
-        <div class="max-w-3xl mx-auto text-center relative z-10 reveal">
-            <h2 class="text-4xl md:text-6xl font-black text-white mb-6 tracking-tight">Ready to reclaim<br>your focus?</h2>
-            <p class="text-xl text-slate-400 mb-10 max-w-xl mx-auto">Join the community. Your most productive day begins with a single step.</p>
-            <a href="{{ url_for('auth.register') }}" class="btn-glow inline-flex items-center gap-3 px-10 py-5 text-white font-bold rounded-2xl text-lg">
-                Create Free Account
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
-            </a>
-            <p class="text-xs text-slate-600 mt-5">Free to use forever, no credit card required.</p>
-        </div>
+      <div
+        class="absolute inset-0 pointer-events-none"
+        style="
+          background: radial-gradient(
+            ellipse at center,
+            rgba(6, 182, 212, 0.08) 0%,
+            transparent 65%
+          );
+        "
+      ></div>
+      <div class="max-w-3xl mx-auto text-center relative z-10 reveal">
+        <h2
+          class="text-4xl md:text-6xl font-black text-white mb-6 tracking-tight"
+        >
+          Ready to reclaim<br />your focus?
+        </h2>
+        <p class="text-xl text-slate-400 mb-10 max-w-xl mx-auto">
+          Join the community. Your most productive day begins with a single
+          step.
+        </p>
+        <a
+          href="{{ url_for('auth.register') }}"
+          class="btn-glow inline-flex items-center gap-3 px-10 py-5 text-white font-bold rounded-2xl text-lg"
+        >
+          Create Free Account
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            stroke-width="2.5"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M14 5l7 7m0 0l-7 7m7-7H3"
+            />
+          </svg>
+        </a>
+        <p class="text-xs text-slate-600 mt-5">
+          Free to use forever, no credit card required.
+        </p>
+      </div>
     </section>
 
     <!-- ── Footer ─────────────────────────────────────────────────────────────── -->
     <footer class="border-t border-slate-800/50 bg-slate-950 py-10 px-6">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-            <div class="flex items-center gap-2">
-                <div class="w-6 h-6 rounded-lg bg-linear-to-tr from-cyan-400 to-blue-500 flex items-center justify-center">
-                    <svg class="w-3.5 h-3.5 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                </div>
-                <span class="font-black text-slate-300 text-sm">Taskly.</span>
-            </div>
-            <p class="text-xs text-slate-600">&copy; 2026 Taskly. Built for deep work.</p>
+      <div
+        class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4"
+      >
+        <div class="flex items-center gap-2">
+          <div
+            class="w-6 h-6 rounded-lg bg-linear-to-tr from-cyan-400 to-blue-500 flex items-center justify-center"
+          >
+            <svg
+              class="w-3.5 h-3.5 text-slate-900"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              stroke-width="3"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+          </div>
+          <span class="font-black text-slate-300 text-sm">Taskly.</span>
         </div>
+        <p class="text-xs text-slate-600">
+          &copy; 2026 Taskly. Built for deep work.
+        </p>
+      </div>
     </footer>
 
     <script>
-        // ── Particle Canvas ────────────────────────────────────────────────────
-        (function () {
-            const canvas = document.getElementById('particle-canvas');
-            const ctx    = canvas.getContext('2d');
-            let W, H, particles = [];
+      // ── Particle Canvas ────────────────────────────────────────────────────
+      (function () {
+        const canvas = document.getElementById("particle-canvas");
+        const ctx = canvas.getContext("2d");
+        let W,
+          H,
+          particles = [];
 
-            const resize = () => {
-                W = canvas.width  = window.innerWidth;
-                H = canvas.height = window.innerHeight;
-            };
-            resize();
-            window.addEventListener('resize', resize);
+        const resize = () => {
+          W = canvas.width = window.innerWidth;
+          H = canvas.height = window.innerHeight;
+        };
+        resize();
+        window.addEventListener("resize", resize);
 
-            const rand = (a, b) => Math.random() * (b - a) + a;
+        const rand = (a, b) => Math.random() * (b - a) + a;
 
-            for (let i = 0; i < 60; i++) {
-                particles.push({
-                    x: rand(0, 1), y: rand(0, 1),
-                    r: rand(1, 2.5),
-                    vx: rand(-0.0002, 0.0002),
-                    vy: rand(-0.0001, 0.0001),
-                    a: rand(0.2, 0.6),
-                });
-            }
+        for (let i = 0; i < 60; i++) {
+          particles.push({
+            x: rand(0, 1),
+            y: rand(0, 1),
+            r: rand(1, 2.5),
+            vx: rand(-0.0002, 0.0002),
+            vy: rand(-0.0001, 0.0001),
+            a: rand(0.2, 0.6),
+          });
+        }
 
-            const draw = () => {
-                ctx.clearRect(0, 0, W, H);
-                particles.forEach(p => {
-                    p.x += p.vx; p.y += p.vy;
-                    if (p.x < 0) p.x = 1; if (p.x > 1) p.x = 0;
-                    if (p.y < 0) p.y = 1; if (p.y > 1) p.y = 0;
-                    ctx.beginPath();
-                    ctx.arc(p.x * W, p.y * H, p.r, 0, Math.PI * 2);
-                    ctx.fillStyle = `rgba(6,182,212,${p.a})`;
-                    ctx.fill();
-                });
-                requestAnimationFrame(draw);
-            };
-            draw();
-        })();
+        const draw = () => {
+          ctx.clearRect(0, 0, W, H);
+          particles.forEach((p) => {
+            p.x += p.vx;
+            p.y += p.vy;
+            if (p.x < 0) p.x = 1;
+            if (p.x > 1) p.x = 0;
+            if (p.y < 0) p.y = 1;
+            if (p.y > 1) p.y = 0;
+            ctx.beginPath();
+            ctx.arc(p.x * W, p.y * H, p.r, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(6,182,212,${p.a})`;
+            ctx.fill();
+          });
+          requestAnimationFrame(draw);
+        };
+        draw();
+      })();
 
-        // ── GSAP Animations ────────────────────────────────────────────────────
-        gsap.registerPlugin(ScrollTrigger);
+      // ── GSAP Animations ────────────────────────────────────────────────────
+      gsap.registerPlugin(ScrollTrigger);
 
-        // Nav scroll effect
+      // Nav scroll effect
+      ScrollTrigger.create({
+        start: "top -60",
+        onUpdate: (self) => {
+          const nav = document.getElementById("nav");
+          if (self.progress > 0) {
+            nav.style.background = "rgba(2,6,23,.9)";
+            nav.style.backdropFilter = "blur(20px)";
+            nav.style.borderBottom = "1px solid rgba(30,41,59,.8)";
+          } else {
+            nav.style.background = "";
+            nav.style.backdropFilter = "";
+            nav.style.borderBottom = "";
+          }
+        },
+      });
+
+      // Hero entrance
+      const heroTl = gsap.timeline({ defaults: { ease: "power3.out" } });
+      heroTl
+        .from(".nav-brand", { y: -20, opacity: 0, duration: 0.7 })
+        .from(
+          ".nav-links a",
+          { y: -16, opacity: 0, duration: 0.5, stagger: 0.1 },
+          "-=0.4",
+        )
+        .from(
+          ".nav-actions a",
+          { y: -16, opacity: 0, duration: 0.5, stagger: 0.1 },
+          "-=0.4",
+        )
+        .from(
+          ".hero-badge",
+          { y: 20, opacity: 0, duration: 0.6, ease: "back.out(2)" },
+          "-=0.2",
+        )
+        .from(
+          ".hero-title",
+          { y: 50, opacity: 0, duration: 1, ease: "power4.out" },
+          "-=0.3",
+        )
+        .from(".hero-subtitle", { y: 30, opacity: 0, duration: 0.8 }, "-=0.6")
+        .from(
+          ".hero-preview",
+          { y: 60, opacity: 0, duration: 1.2, ease: "power4.out" },
+          "-=0.4",
+        );
+
+      // Scroll reveals
+      document.querySelectorAll(".reveal").forEach((el) => {
+        gsap.to(el, {
+          scrollTrigger: {
+            trigger: el,
+            start: "top 85%",
+            toggleActions: "play none none none",
+          },
+          y: 0,
+          opacity: 1,
+          duration: 0.8,
+          ease: "power3.out",
+        });
+      });
+
+      // Animating feature cards with slight stagger
+      document.querySelectorAll(".feature-card").forEach((el, i) => {
+        gsap.from(el, {
+          scrollTrigger: { trigger: el, start: "top 88%" },
+          y: 50,
+          opacity: 0,
+          duration: 0.8,
+          delay: i * 0.1,
+          ease: "power3.out",
+        });
+      });
+
+      // Stats counter animation
+      document.querySelectorAll(".stat-num").forEach((el) => {
+        const target = parseInt(el.dataset.target);
         ScrollTrigger.create({
-            start: 'top -60',
-            onUpdate: self => {
-                const nav = document.getElementById('nav');
-                if (self.progress > 0) {
-                    nav.style.background       = 'rgba(2,6,23,.9)';
-                    nav.style.backdropFilter   = 'blur(20px)';
-                    nav.style.borderBottom     = '1px solid rgba(30,41,59,.8)';
-                } else {
-                    nav.style.background       = '';
-                    nav.style.backdropFilter   = '';
-                    nav.style.borderBottom     = '';
-                }
-            }
-        });
-
-        // Hero entrance
-        const heroTl = gsap.timeline({ defaults: { ease: 'power3.out' } });
-        heroTl
-            .from('.nav-brand',   { y: -20, opacity: 0, duration: 0.7 })
-            .from('.nav-links a', { y: -16, opacity: 0, duration: 0.5, stagger: 0.1 }, '-=0.4')
-            .from('.nav-actions a', { y: -16, opacity: 0, duration: 0.5, stagger: 0.1 }, '-=0.4')
-            .from('.hero-badge',  { y: 20, opacity: 0, duration: 0.6, ease: 'back.out(2)' }, '-=0.2')
-            .from('.hero-title',  { y: 50, opacity: 0, duration: 1, ease: 'power4.out' }, '-=0.3')
-            .from('.hero-subtitle', { y: 30, opacity: 0, duration: 0.8 }, '-=0.6')
-            .from('.hero-ctas a', { y: 20, scale: 0.95, opacity: 0, duration: 0.6, stagger: 0.15, ease: 'back.out(1.5)' }, '-=0.5')
-            .from('.hero-preview', { y: 60, opacity: 0, duration: 1.2, ease: 'power4.out' }, '-=0.4');
-
-        // Scroll reveals
-        document.querySelectorAll('.reveal').forEach(el => {
-            gsap.to(el, {
-                scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' },
-                y: 0, opacity: 1, duration: 0.8, ease: 'power3.out',
+          trigger: el,
+          start: "top 85%",
+          once: true,
+          onEnter: () => {
+            const obj = { val: 0 };
+            gsap.to(obj, {
+              val: target,
+              duration: 1.6,
+              ease: "power2.out",
+              onUpdate: () => {
+                el.innerText =
+                  Math.round(obj.val).toLocaleString() +
+                  (target === 99 ? "%" : "+");
+              },
             });
+          },
         });
-
-        // Animating feature cards with slight stagger
-        document.querySelectorAll('.feature-card').forEach((el, i) => {
-            gsap.from(el, {
-                scrollTrigger: { trigger: el, start: 'top 88%' },
-                y: 50, opacity: 0, duration: 0.8, delay: i * 0.1, ease: 'power3.out',
-            });
-        });
-
-        // Stats counter animation
-        document.querySelectorAll('.stat-num').forEach(el => {
-            const target = parseInt(el.dataset.target);
-            ScrollTrigger.create({
-                trigger: el,
-                start: 'top 85%',
-                once: true,
-                onEnter: () => {
-                    const obj = { val: 0 };
-                    gsap.to(obj, {
-                        val: target, duration: 1.6, ease: 'power2.out',
-                        onUpdate: () => {
-                            el.innerText = Math.round(obj.val).toLocaleString() + (target === 99 ? '%' : '+');
-                        }
-                    });
-                }
-            });
-        });
+      });
     </script>
-</body>
+  </body>
 </html>
