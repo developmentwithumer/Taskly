@@ -1,49 +1,88 @@
 <div align="center">
-  <img src="https://raw.githubusercontent.com/tandpfun/skill-icons/main/icons/Flask-Dark.svg" width="40" height="40" alt="Flask" />
-  <img src="https://raw.githubusercontent.com/tandpfun/skill-icons/main/icons/TailwindCSS-Dark.svg" width="40" height="40" alt="Tailwind CSS" />
-  <img src="https://raw.githubusercontent.com/tandpfun/skill-icons/main/icons/TypeScript.svg" width="40" height="40" alt="TypeScript" />
-  <h1 align="center">Taskly</h1>
-  <p align="center"><strong>Manage Work at the Speed of Zen Flow</strong></p>
-  <p align="center">A highly optimized, brutally minimal, real-time Kanban board with built-in deep-work tools.</p>
+
+<img src="https://raw.githubusercontent.com/tandpfun/skill-icons/main/icons/Flask-Dark.svg" width="48" height="48" alt="Flask" />
+&nbsp;&nbsp;
+<img src="https://raw.githubusercontent.com/tandpfun/skill-icons/main/icons/TailwindCSS-Dark.svg" width="48" height="48" alt="Tailwind CSS" />
+&nbsp;&nbsp;
+<img src="https://raw.githubusercontent.com/tandpfun/skill-icons/main/icons/TypeScript.svg" width="48" height="48" alt="TypeScript" />
+
+<br/>
+<br/>
+
+# Taskly
+
+**Manage Work at the Speed of Zen Flow**
+
+A highly optimized, brutally minimal, real-time Kanban board with built-in deep-work tools.
+
+<br/>
+
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-taskly.muhammadumer.xyz-00d2d3?style=for-the-badge&logo=google-chrome&logoColor=white)](https://taskly.muhammadumer.xyz)
+[![Python](https://img.shields.io/badge/Python-3.12-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![Flask](https://img.shields.io/badge/Flask-3.1.3-000000?style=for-the-badge&logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-6.0.2-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-v4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
+
 </div>
+
+---
+
+## 🌐 Live Demo
+
+**[taskly.muhammadumer.xyz](https://taskly.muhammadumer.xyz)** — Free to use, no credit card required.
+
+> Create an account with your email or sign in instantly via **GitHub OAuth**.
 
 ---
 
 ## 🚀 Overview
 
-Taskly is a premium, dark-mode-first task management application designed for people who want to stay in the zone. It strips away the enterprise bloat found in traditional project managers and replaces it with a beautiful, lightning-fast UI that updates instantly across all your devices.
+Taskly is a premium, dark-mode-first task management application designed for people who want to stay in the zone. It strips away the enterprise bloat found in tools like Jira or Asana and replaces it with a beautiful, lightning-fast UI that updates in real time across all your devices.
 
-### Key Features
-- ⚡ **Real-time Sync**: Move a card on your phone, and it instantly moves on your desktop via WebSockets.
-- 🧘 **Zen Focus Mode**: A built-in 25-minute Pomodoro timer that takes over your screen, helping you lock in and execute. Your task auto-completes when the timer fires.
-- 🧠 **Smart Workflow**: Tasks scheduled for today automatically transition to "In Progress". Missed deadlines surface automatically as "Overdue".
-- 🔎 **Instant Global Search**: Filter your entire board by exact matches, text, or dates instantly, without ever reloading the browser.
-- 📱 **Mobile First**: Fluid, responsive design with intuitive drawer interactions for mobile task management.
+No subscriptions. No AI upsells. Just your board, your tasks, and your flow.
+
+---
+
+## ✨ Key Features
+
+| Feature | Description |
+|---|---|
+| ⚡ **Real-time Sync** | Move a card on your phone and it instantly moves on your desktop via WebSockets — zero polling, zero lag. |
+| 🧘 **Zen Focus Mode** | A full-screen 25-minute Pomodoro timer that locks you in on one task at a time. Auto-completes the task when the timer fires. |
+| 🧠 **Smart Workflow** | Tasks scheduled for today automatically transition to **In Progress**. Missed deadlines surface as **Overdue**, no manual updates needed. |
+| 🔎 **Instant Global Search** | Filter your entire board by title, status, or date as you type, no page reloads, no delays. |
+| 📱 **Mobile-First Design** | Fully responsive with fluid drawer interactions built for touch from day one. |
+| 🔐 **Dual Auth** | Sign up with email/password or authenticate instantly with your GitHub account via OAuth. |
 
 ---
 
 ## 🏗️ Architecture & Tech Stack
 
-We intentionally avoided using heavy frontend frameworks (like React, Vue, or Next.js) in favor of a lean, highly modular Vanilla JavaScript/TypeScript approach. This allows Taskly to load instantly, consume virtually zero memory, and remain easily maintainable. 
+Taskly intentionally avoids heavy frontend frameworks (React, Vue, Next.js) in favor of a **lean, modularized Vanilla TypeScript** approach. This results in near-instant load times, minimal memory consumption, and a codebase that is simple to reason about.
 
 ### Backend
-* **Python 3 & Flask**: Chosen for its lightweight flexibility and Pythonic simplicity. It acts as our robust API and WebSocket server.
-* **SQLAlchemy**: An elegant ORM for cleanly interacting with our data models.
-* **Flask-SocketIO**: Handles two-way real-time communication for immediate board updates.
-* **uv**: Used for hyper-fast Python package management and virtual environment resolution.
+
+| Technology | Role |
+|---|---|
+| **Python 3 & Flask** | Lightweight API server and WebSocket host |
+| **SQLAlchemy** | ORM for clean, Pythonic database interaction |
+| **Flask-SocketIO** | Bidirectional real-time communication |
+| **uv** | Hyper-fast Python package management and virtual environment resolution |
 
 ### Frontend
-* **Vanilla TypeScript**: Hand-rolled, modularized TS ensures type safety without the overhead of a bloated Virtual DOM framework.
-* **Bun**: Utilized as an incredibly fast bundler and package runner. Bun instantly bundles our distinct TS modules into a single production script.
-* **Tailwind CSS v4**: The absolute bleeding-edge of utility-first CSS, processed locally for a tiny footprint.
-* **GSAP**: Used exclusively on the storefront landing page for buttery smooth scroll animations and particle canvases.
-* **SortableJS**: Powers the buttery smooth drag-and-drop Kanban interactions.
+
+| Technology | Role |
+|---|---|
+| **Vanilla TypeScript** | Modularized, type-safe client logic, no Virtual DOM overhead |
+| **Bun** | Ultra-fast bundler and script runner |
+| **Tailwind CSS v4** | Utility-first styling with a minimal compiled footprint |
+| **GSAP** | Scroll animations and particle canvas on the landing page |
+| **SortableJS** | Smooth, accessible drag-and-drop for the Kanban board |
 
 ---
 
 ## 📂 Project Structure
-
-The repository is structured to strictly separate frontend logic, backend routing, and template views.
 
 ```text
 taskly/
@@ -54,81 +93,129 @@ taskly/
 │   ├── routes.py             # Main API and frontend route handlers
 │   ├── routes_auth.py        # Authentication (GitHub OAuth & Email)
 │   └── sockets.py            # WebSocket event listeners
-├── src/                      # Frontend Logic (TypeScript)
-│   ├── css/                  # Tailwind source entrypoints
-│   │   └── src.css           # Tailwind source entrypoint
-│   └── js/                   # Modularized TS logic
+├── src/                      # Frontend Source (TypeScript + CSS)
+│   ├── css/
+│   │   └── src.css           # Tailwind v4 entrypoint
+│   └── js/
 │       ├── api.ts            # Network abstraction (Fetch wrappers)
 │       ├── focus.ts          # Zen Mode Pomodoro timer logic
 │       ├── main.ts           # Core initialization and DOM binding
-│       ├── toast.ts          # Custom notification/toast popups
-│       ├── types.ts          # TypeScript interfaces
+│       ├── toast.ts          # Custom notification system
+│       ├── types.ts          # Shared TypeScript interfaces
 │       └── ui.ts             # Direct DOM manipulation handlers
-├── static/                   # Compiled outputs
-│   ├── css/                  # Output generated by Tailwind/Bun watcher
-│   └── js/                   # Output bundled by Bun
+├── static/                   # Compiled Outputs (gitignored in dev)
+│   ├── css/                  # Tailwind-compiled CSS
+│   └── js/                   # Bun-bundled JavaScript
 ├── templates/                # Jinja2 HTML Views
-│   ├── macros/               # Jinja2 macros
-│   │   └── ui.html           # UI macros
+│   ├── macros/
+│   │   └── ui.html           # Reusable Jinja2 UI macros
 │   ├── index.html            # Animated marketing landing page
-│   ├── dashboard.html        # Main app view
+│   ├── dashboard.html        # Main Kanban app view
 │   ├── login.html            # Auth view
 │   └── register.html         # Auth view
-├── main.py                   # Server entrypoint wrapper
-└── package.json              # Bun scripts and TS dependencies
+├── main.py                   # Server entrypoint
+├── pyproject.toml            # Python project config
+└── package.json              # Bun scripts and frontend dependencies
 ```
 
-### Why this directory layout?
-1. **Separation of Concerns:** Python logic lives strictly in `app/`, while TypeScript and Tailwind lives strictly in `src/`. 
-2. **Build Isolation:** Everything in `src/` is considered "source material" requiring transpilation. The compiled artifacts are completely isolated in `static/` where Flask expects them to be.
-3. **Maintainability:** By splitting a massive JavaScript monolith into semantic files (`focus.ts`, `api.ts`, `ui.ts`), we ensure future maintainers can easily isolate bugs or expand upon specific features without traversing thousands of lines.
+### Why this structure?
+
+- **Separation of Concerns:-** Python logic lives strictly in `app/`. TypeScript and Tailwind live strictly in `src/`. They never mix.
+- **Build Isolation:-** `src/` is raw source material. `static/` holds only compiled artifacts, exactly where Flask expects them.
+- **Maintainability:-** Splitting the client into semantic modules (`focus.ts`, `api.ts`, `ui.ts`) means a developer can isolate any feature in seconds rather than scanning a 2,000-line monolith.
 
 ---
 
 ## 🛠️ Local Development
 
-Taskly requires Python (via `uv`) and `bun` for the frontend build pipeline.
+### Prerequisites
 
-### 1. Installation
+- [Python 3.12+](https://www.python.org/) with [`uv`](https://github.com/astral-sh/uv) installed
+- [Bun](https://bun.sh/) installed
 
-**Setup Python Environment:**
+### 1. Clone the repo
+
 ```bash
-uv venv
-uv sync
+git clone https://github.com/developmentwithumer/Taskly.git
+cd Taskly
 ```
 
-**Setup Frontend Environment:**
+### 2. Install dependencies
+
 ```bash
+# Python backend
+uv venv
+uv sync
+
+# Frontend (TypeScript + Tailwind)
 bun install
 ```
 
-### 2. Running the Servers
+### 3. Configure environment
 
-For local development, you need three parallel terminal sessions to independently monitor the backend, TypeScript compiler, and CSS compiler.
+Create a `.env` file in the project root:
 
-**Terminal 1 — The Backend:**
+```env
+SECRET_KEY=your-secret-key-here
+GITHUB_CLIENT_ID=your-github-oauth-app-client-id
+GITHUB_CLIENT_SECRET=your-github-oauth-app-client-secret
+DATABASE_URL=sqlite:///taskly.db   # or your preferred DB URL
+DEBUG=true # for development
+RUN_DB_CREATE_ALL=true # create db and tables upon application startup.
+OAUTH_ALLOW_INSECURE=true # this will allow to sign in over http useful for local development
+```
+
+### 4. Run the development servers
+
+You'll need three terminal sessions running simultaneously:
+
 ```bash
+# Terminal 1 — Flask backend
 uv run main.py
-```
 
-**Terminal 2 — The TypeScript Bundler:**
-```bash
+# Terminal 2 — TypeScript bundler (watch mode)
 bun run watch:js
-```
 
-**Terminal 3 — The Tailwind CSS Compiler:**
-```bash
+# Terminal 3 — Tailwind CSS compiler (watch mode)
 bun run watch:css
 ```
 
-Navigate to `http://127.0.0.1:5000` to see the application live.
+Then open **[http://127.0.0.1:5000](http://127.0.0.1:5000)**.
 
 ---
 
 ## 🎨 Design Philosophy
 
-* **Show, Don't Tell**: Information hierarchy is paramount. Colors are used strictly for status indicators (Cyan = Focus, Green = Done, Red = Overdue).
-* **Speed above all**: Interactions must be optimistic. When a user drags a task, the UI responds instaneously, and the network request resolves gracefully behind the scenes.
-* **Focus on the Work**: No excessive popups, no "chat", no complex permission groups. Just you, your board, and your flow.
+**Show, Don't Tell:-** Information hierarchy is paramount. Color is used strictly for meaning: `Cyan = Focus`, `Green = Done`, `Red = Overdue`. Nothing is decorative without purpose.
+
+**Speed Above All:-** Interactions are optimistic. When a user drags a task, the UI responds instantly. The network request resolves gracefully in the background. Failure states roll back silently.
+
+**Focus on the Work:-** No excessive popups. No AI upsells. No complex permission systems. Just you, your board, and your flow.
 
 > *"Your most productive day begins with a single step."*
+
+---
+
+## 🤝 Contributing
+
+Contributions, issues, and feature requests are welcome. Feel free to check the [issues page](https://github.com/developmentwithumer/Taskly/issues).
+
+1. Fork the repo
+2. Create a feature branch (`git checkout -b feature/your-feature`)
+3. Commit your changes (`git commit -m 'Add your feature'`)
+4. Push to the branch (`git push origin feature/your-feature`)
+5. Open a Pull Request
+
+---
+
+## 📄 License
+
+Distributed under the MIT License. See [`LICENSE`](LICENSE) for details.
+
+---
+
+<div align="center">
+
+Built with focus, for people who focus. &nbsp;·&nbsp; [taskly.muhammadumer.xyz](https://taskly.muhammadumer.xyz)
+
+</div>
